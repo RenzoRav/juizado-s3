@@ -16,6 +16,7 @@ Sistema para processamento de documentos e imagens, com:
 - Conversão de imagens para PDF com ajuste de contraste e redimensionamento para A4.  
 - Upload automático de documentos e PDFs para **MinIO**.  
 - Suporte a arquivos individuais e pastas mistas contendo imagens e documentos.  
+- Download de arquivos de uma sessão , ou arquivos individuais 
 - Estrutura organizada no bucket MinIO:
 
 Ideal para digitalização de documentos de forma prática para professores e escritórios jurídicos.

@@ -38,7 +38,7 @@ async def download_file(request: DownloadFileRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router_download.get("/download/session")
+@router_download.post("/download/session")
 async def download_session(
     request_input = SessionData
 ):

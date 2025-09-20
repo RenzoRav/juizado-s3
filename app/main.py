@@ -1,9 +1,9 @@
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.router.crud import router_crud
-from app.api.router.upload import router_upload
+from fastapi import FastAPI 
 
 from app.api.router.download import router_download
+from app.api.router.upload import router_upload
+from app.api.router.crud import router_crud
 
 app = FastAPI(
     title="API Nucleo Juridico - S3",
@@ -13,12 +13,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # em produção, troque "*" por ["http://localhost:3000"]
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 app.include_router(router_crud)
 app.include_router(router_upload)

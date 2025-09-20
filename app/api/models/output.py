@@ -22,3 +22,8 @@ class DownloadSessionRequest(BaseModel):
 
 class DownloadFileRequest(DownloadSessionRequest):
     file_name: str
+
+class ErrorResponse(BaseModel):
+    status: str = "error"           # status padrão "error"
+    message: str                     # mensagem amigável do erro
+    details: Optional[str] = None

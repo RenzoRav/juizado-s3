@@ -1,0 +1,9 @@
+boto3
+botocore
+Pillow
+img2pdf
+fastapi
+uvicorn
+pydantic-settings
+pytest
+python-multipart 

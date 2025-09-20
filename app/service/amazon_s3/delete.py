@@ -31,7 +31,6 @@ class S3DeletePath:
             
             to_delete = [{"Key": obj["Key"]} for obj in objects["Contents"]]
 
-            # executa exclusão em lote
             self.client.delete_objects(
                 Bucket=self.bucket,
                 Delete={"Objects": to_delete}
@@ -86,14 +85,7 @@ class S3DeletePathSession(S3DeletePath):
         return super().delete_path()
 
 class S3DeleteFile:
-    def __init__(
-            self, 
-            connection: S3Connection, 
-            user_name : str , 
-            client_name : str , 
-            session_name : str ,
-            file_name : str 
-        ):
+    def __init__(self, connection: S3Connection, user_name: str, client_name: str, session_name: str, file_name: str):
         self.client = connection.client
         self.bucket = connection.config.bucket_name
         self.user_name = user_name
@@ -102,40 +94,31 @@ class S3DeleteFile:
         self.file_name = file_name
         self.file_path = self.create_path()
 
-    def create_path(self) : 
-        """
-            Retorna o caminho do arquivo
-        """
+    def create_path(self):
         return S3PathFile(
-            user_name=self.user_name , 
+            user_name=self.user_name,
             client_name=self.client_name,
             session_name=self.session_name,
             file_name=self.file_name
-        ).get_path_session()
-    
+        ).get_path_file()
 
     def delete_file(self) -> str:
-        """Deleta um arquivo específico"""
         try:
-            # verifica se o arquivo existe
-            response = self.client.list_objects_v2(
-                Bucket=self.bucket,
-                Prefix=self.file_path,
-                MaxKeys=1
-            )
-
+            # Confirma se existe
+            response = self.client.list_objects_v2(Bucket=self.bucket, Prefix=self.file_path, MaxKeys=1)
             if "Contents" not in response:
                 logger.warning(f"Arquivo não encontrado: {self.file_path}")
                 return f"{self.bucket}/{self.file_path} não encontrado."
 
-            # deleta o arquivo
-            self.client.delete_object(
-                Bucket=self.bucket,
-                Key=self.file_path
-            )
+            # Deleta
+            self.client.delete_object(Bucket=self.bucket, Key=self.file_path)
+            logger.info(f"Arquivo deletado: {self.file_path}")
 
-            logger.info(f"Arquivo deletado com sucesso: {self.file_path}")
+            response = self.client.list_objects_v2(Bucket=self.bucket, Prefix=self.file_path, MaxKeys=1)
+            if "Contents" in response:
+                return f"{self.bucket}/{self.file_path} não pôde ser deletado."
             return f"{self.bucket}/{self.file_path} deletado com sucesso."
+
         except Exception as e:
             logger.error(f"Erro ao deletar arquivo {self.file_path}: {e}")
             raise

@@ -1,10 +1,11 @@
-from app.core.logger import logger
 from app.service.amazon_s3.connection import S3Connection
 from app.utils.data import (
     S3PathUser , 
     S3PathClient , 
     S3PathSession
 )
+
+from app.core.logger import logger
 
 class S3CreatePath:
     def __init__(

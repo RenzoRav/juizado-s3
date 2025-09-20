@@ -34,7 +34,12 @@ async def upload_files(
     uploaded_files = []
 
     try:
-        manager = S3ManagerUpload(s3_connection=s3, user_name=user_name, client_name=client_name, session_name=session_name)
+        manager = S3ManagerUpload(
+            s3_connection=s3, 
+            user_name=user_name, 
+            client_name=client_name, 
+            session_name=session_name
+        )
         base_path = manager.path
 
         for file in files:
@@ -42,7 +47,6 @@ async def upload_files(
             with open(file_path, "wb") as f:
                 shutil.copyfileobj(file.file, f)
 
-            # Se for ZIP → extrai e processa cada arquivo individual
             if file.filename.lower().endswith(".zip"):
                 with zipfile.ZipFile(file_path, "r") as zip_ref:
                     for f in zip_ref.namelist():

@@ -1,8 +1,11 @@
-import os
-import tempfile
 from datetime import datetime
+import tempfile
+import zipfile
+import os
+
 from app.service.amazon_s3.connection import S3Connection
 from app.core.logger import logger
+
 
 class S3PushDocs:
     def __init__(self, connection: S3Connection):
@@ -10,7 +13,6 @@ class S3PushDocs:
         self.bucket = connection.config.bucket_name
 
     def download_file(self, key: str, download_path: str):
-        """Baixa um arquivo específico"""
         try:
             self.client.download_file(self.bucket, key, download_path)
             logger.info(f"Arquivo {key} baixado em {download_path}")
@@ -18,11 +20,7 @@ class S3PushDocs:
             logger.error(f"Erro ao baixar arquivo {key}: {e}")
             raise
 
-    def download_folder(self, prefix: str, client_name: str,session_name : str) -> str:
-        """
-        Baixa todos os arquivos do prefixo em uma pasta temporária.
-        A pasta terá o nome {client_name}_{datetime}.
-        """
+    def download_folder(self, prefix: str, client_name: str, session_name: str) -> str:
         try:
             objects = self.client.list_objects_v2(Bucket=self.bucket, Prefix=prefix)
             keys = [obj['Key'] for obj in objects.get('Contents', [])]
@@ -37,7 +35,10 @@ class S3PushDocs:
             os.makedirs(folder_path, exist_ok=True)
 
             for key in keys:
-                relative_name = os.path.relpath(key, prefix)
+                relative_name = key[len(prefix):].lstrip("/")
+                if not relative_name or relative_name.startswith("."):
+                    continue
+
                 download_path = os.path.join(folder_path, relative_name)
                 os.makedirs(os.path.dirname(download_path), exist_ok=True)
                 self.client.download_file(self.bucket, key, download_path)
@@ -47,4 +48,20 @@ class S3PushDocs:
 
         except Exception as e:
             logger.error(f"Erro ao baixar pasta {prefix}: {e}")
+            raise
+
+    def make_zip_from_folder(self, folder_path: str, zip_path: str):
+        try:
+            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+                for root, _, files in os.walk(folder_path):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, folder_path)
+                        zipf.write(file_path, arcname)
+
+            logger.info(f"Pasta {folder_path} compactada em {zip_path}")
+            return zip_path
+
+        except Exception as e:
+            logger.error(f"Erro ao compactar pasta {folder_path}: {e}")
             raise

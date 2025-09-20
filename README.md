@@ -27,7 +27,8 @@ Ideal para digitalização de documentos de forma prática para professores e es
 
 - 📄 **Documentos suportados:** `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.pdf`, `.txt`.  
 - 🖼 **Imagens suportadas:** `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`.  
-- ✅ **Upload seguro:** Todos os arquivos processados são enviados para MinIO.  
+- ✅ **Upload seguro:** Todos os arquivos processados são enviados para MinIO.
+- ✅ **Download** Faça download dos arquivos da sessão , ou apenas um arquivo
 - ⚡ **Conversão automática:** Imagens → PDF com ajustes de contraste, escala de cinza e redimensionamento para A4.  
 
 ---

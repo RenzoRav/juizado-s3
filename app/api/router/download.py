@@ -8,7 +8,7 @@ from fastapi import HTTPException, APIRouter
 from fastapi.responses import FileResponse
 
 from app.api.models.output import DownloadFileRequest 
-from app.api.models.input import SessionData
+from app.api.models.input import DownloadSession
 
 from app.service.amazon_s3.push_docs import S3PushDocs
 from app.service.amazon_s3.connection import s3
@@ -49,14 +49,16 @@ async def download_file(request: DownloadFileRequest):
 
 
 @router_download.post("/download/session")
-async def download_session(request_input: SessionData):
+async def download_session(request_input: DownloadSession):
     try:   
-        user_name = request_input.user_name.lower()
         client_name = request_input.client_name.lower()
         session_name = request_input.session_name.lower()
+        unic_name = request_input.unic_name 
+        unic_client = request_input.unic_client
+        unic_session = request_input.unic_session
 
         s3_push = S3PushDocs(s3)
-        prefix = S3PathSession(user_name, client_name, session_name).get_path_session()
+        prefix = S3PathSession(unic_name, unic_client, unic_session).get_path_session()
 
         try:
             folder_path = s3_push.download_folder(prefix, client_name, session_name)

@@ -1,9 +1,8 @@
-boto3
-botocore
-Pillow
-img2pdf
-fastapi
-uvicorn
-pydantic-settings
-pytest
-python-multipart 
+boto3==1.40.35
+botocore==1.40.25
+Pillow==11.3.0
+img2pdf==0.6.1
+fastapi==0.116.2
+uvicorn==0.35.0
+pydantic-settings==2.10.1
+python-multipart==0.0.20

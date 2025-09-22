@@ -36,7 +36,7 @@ Ideal para digitalização de documentos de forma prática para professores e es
 ## 🌎 Como usar ? 
 ### Comandos 👨‍💻
 - Crie o MinIO 
-`docker compsoe up -d`
+`docker compose up -d`
 
 - Rodar a aplicação 
 `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --env-file .env --log-level info`

@@ -12,7 +12,7 @@ from fastapi import (
     File ,
     Form
 )
-from app.service.ocr.apply import S3ManagerUpload 
+from app.service.amazon_s3.scan import S3ManagerUpload 
 from app.service.amazon_s3.delete import S3DeleteFile
 from app.api.models.input import FileData 
 from app.api.models.output import UploadOutput , DirectoryOutput
@@ -25,9 +25,9 @@ router_upload = APIRouter(tags=["Upload"])
 
 @router_upload.post("/upload/files", response_model=UploadOutput)
 async def upload_files(
-    user_name: str = Form(...),
-    client_name: str = Form(...),
-    session_name: str = Form(...),
+    user_id: int = Form(...),
+    client_id: int = Form(...),
+    session_id: int = Form(...),
     files: List[UploadFile] = File(...)
 ):
     temp_dir = tempfile.mkdtemp()
@@ -36,9 +36,9 @@ async def upload_files(
     try:
         manager = S3ManagerUpload(
             s3_connection=s3, 
-            user_name=user_name, 
-            client_name=client_name, 
-            session_name=session_name
+            user_name=str(user_id), 
+            client_name=str(client_id), 
+            session_name=str(session_id)
         )
         base_path = manager.path
 
@@ -67,9 +67,9 @@ async def upload_files(
 @router_upload.delete("/delete/file", response_model=DirectoryOutput)
 async def delete_file(request: FileData):
     try:
-        user_name = request.user_name.lower()
-        client_name = request.client_name.lower()
-        session_name = request.session_name.lower()
+        user_name = str(request.user_id)
+        client_name = str(request.client_id)
+        session_name = str(request.session_id)
         file_name = request.file_name.lower()
 
         deleter = S3DeleteFile(

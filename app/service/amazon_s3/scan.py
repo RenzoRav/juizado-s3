@@ -6,12 +6,6 @@ from app.utils.data import S3PathSession
 from app.core.logger import logger
 
 class S3ManagerUpload:
-    """
-    Gerencia upload de arquivos individuais para MinIO.
-    - Converte imagens em PDF.
-    - Suporta documentos Office/PDF/TXT.
-    """
-
     _SUPPORTED_IMAGE_FORMATS = (".jpg", ".jpeg", ".png", ".bmp", ".tiff")
     _SUPPORTED_DOCS = (".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt")
 

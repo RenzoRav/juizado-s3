@@ -23,7 +23,9 @@ router_download = APIRouter(tags=['Download'])
 @router_download.post("/download/file")
 async def download_file(request: DownloadFileRequest):
     s3_push = S3PushDocs(s3)
-    prefix = S3PathSession(request.user_name, request.client_name, request.session_name).get_path_session()
+    prefix = S3PathSession(
+        str(request.user_id), str(request.client_id), str(request.session_id)
+    ).get_path_session()
     key = f"{prefix}/{request.file_name}"
 
     temp_dir = tempfile.mkdtemp()
@@ -53,9 +55,9 @@ async def download_session(request_input: DownloadSession):
     try:   
         client_name = request_input.client_name.lower()
         session_name = request_input.session_name.lower()
-        unic_name = request_input.unic_name 
-        unic_client = request_input.unic_client
-        unic_session = request_input.unic_session
+        unic_name = str(request_input.user_id)
+        unic_client = str(request_input.client_id)
+        unic_session = str(request_input.session_id)
 
         s3_push = S3PushDocs(s3)
         prefix = S3PathSession(unic_name, unic_client, unic_session).get_path_session()

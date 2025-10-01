@@ -1,7 +1,6 @@
 from fastapi import (
     HTTPException , 
     APIRouter , 
-    Query , 
 )
 
 from app.api.models.input import (
@@ -20,7 +19,6 @@ from app.service.amazon_s3.delete import (
     S3DeletePathClient , 
     S3DeletePathUser , 
     S3DeletePathSession , 
-    S3DeleteFile
 )
 
 from app.api.models.output import DirectoryOutput
@@ -55,7 +53,7 @@ async def directory_user(request_input: UserData):
     try:
         path_creator = S3CreatePathUser(
             s3,
-            user_name=request_input.user_name.lower()
+            user_name=str(request_input.user_id)
         )
 
         created_path = path_creator.create_path()
@@ -86,8 +84,8 @@ async def directory_client(request_input: ClientData):
     try:
         path_creator = S3CreatePathClient(
             s3,
-            user_name=request_input.user_name.lower(),
-            client_name=request_input.client_name.lower()
+            user_name=str(request_input.user_id),
+            client_name=str(request_input.client_id)
         )
 
         created_path = path_creator.create_path()
@@ -118,9 +116,9 @@ async def directory_session(request_input: SessionData):
     try:
         path_creator = S3CreatePathSession(
             s3,
-            user_name=request_input.user_name.lower(),
-            client_name=request_input.client_name.lower(),
-            session_name=request_input.session_name.lower()
+            user_name=str(request_input.user_id),
+            client_name=str(request_input.client_id),
+            session_name=str(request_input.session_id)
         )
 
         created_path = path_creator.create_path()
@@ -151,7 +149,7 @@ async def delete_user(request_input: UserData):
     try:
         deleter = S3DeletePathUser(
             s3,
-            user_name=request_input.user_name.lower()
+            user_name=str(request_input.user_id)
         )
         deleted_path = deleter.delete_path()
 
@@ -183,17 +181,17 @@ async def delete_client(request_input: ClientData):
     try:
         deleter = S3DeletePathClient(
             s3,
-            user_name=request_input.user_name.lower(),
-            client_name=request_input.client_name.lower()
+            user_name=str(request_input.user_id),
+            client_name=str(request_input.client_id)
         )
         deleted_path = deleter.delete_path()
 
         if "não encontrado" in deleted_path:
             status_msg = "not_found"
-            message = f"Diretório do cliente {request_input.client_name} não encontrado."
+            message = f"Diretório do cliente {request_input.client_id} não encontrado."
         else:
             status_msg = "success"
-            message = f"Diretório do cliente {request_input.client_name} deletado com sucesso."
+            message = f"Diretório do cliente {request_input.client_id} deletado com sucesso."
 
         return {
             "status": status_msg,
@@ -214,18 +212,18 @@ async def delete_session(request_input: SessionData):
     try:
         deleter = S3DeletePathSession(
             s3,
-            user_name=request_input.user_name.lower(),
-            client_name=request_input.client_name.lower(),
-            session_name=request_input.session_name.lower()
+            user_name=str(request_input.user_id),
+            client_name=str(request_input.client_id),
+            session_name=str(request_input.session_id)
         )
         deleted_path = deleter.delete_path()
 
         if "não encontrado" in deleted_path:
             status_msg = "not_found"
-            message = f"Diretório da sessão {request_input.session_name} não encontrado."
+            message = f"Diretório da sessão {request_input.session_id} não encontrado."
         else:
             status_msg = "success"
-            message = f"Diretório da sessão {request_input.session_name} deletado com sucesso."
+            message = f"Diretório da sessão {request_input.session_id} deletado com sucesso."
 
         return {
             "status": status_msg,

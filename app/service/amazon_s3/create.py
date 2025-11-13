@@ -1,6 +1,5 @@
 from app.service.amazon_s3.connection import S3Connection
-from app.utils.data import (
-    S3PathUser , 
+from app.utils.data import ( 
     S3PathClient , 
     S3PathSession
 )
@@ -44,24 +43,11 @@ class S3CreatePath:
             raise
         
 
-class S3CreatePathUser(S3CreatePath):
-    def __init__(self, connection: S3Connection, user_name: str):
-        super().__init__(
-            connection, 
-            S3PathUser(
-                user_name=user_name
-            ).get_path_user())
-
-    def create_path(self) -> str:
-        return super().create_path()
-
-
 class S3CreatePathClient(S3CreatePath):
-    def __init__(self, connection: S3Connection, user_name: str, client_name: str):
+    def __init__(self, connection: S3Connection, client_name: str):
         super().__init__(
             connection, 
             S3PathClient(
-                user_name=user_name,
                 client_name=client_name
             ).get_path_client())
 
@@ -70,11 +56,10 @@ class S3CreatePathClient(S3CreatePath):
 
 
 class S3CreatePathSession(S3CreatePath):
-    def __init__(self, connection: S3Connection, user_name: str, client_name: str, session_name: str):
+    def __init__(self, connection: S3Connection,client_name: str, session_name: str):
         super().__init__(
             connection, 
             S3PathSession(
-                user_name=user_name , 
                 client_name=client_name , 
                 session_name=session_name
             ).get_path_session())

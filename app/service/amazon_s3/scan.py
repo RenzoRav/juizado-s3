@@ -5,14 +5,15 @@ from app.service.amazon_s3.connection import S3Connection
 from app.utils.data import S3PathSession
 from app.core.logger import logger
 
+
 class S3ManagerUpload:
     _SUPPORTED_IMAGE_FORMATS = (".jpg", ".jpeg", ".png", ".bmp", ".tiff")
     _SUPPORTED_DOCS = (".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt")
 
-    def __init__(self, s3_connection: S3Connection, user_name: str, client_name: str, session_name: str):
+    def __init__(self, s3_connection: S3Connection, client_name: str, session_name: str):
         self.client = s3_connection.client
         self.bucket = s3_connection.config.bucket_name
-        self.path = S3PathSession(user_name, client_name, session_name).get_path_session()
+        self.path = S3PathSession(client_name, session_name).get_path_session()
 
     def _object_exists(self, object_name: str) -> bool:
         try:
@@ -45,7 +46,6 @@ class S3ManagerUpload:
             return None
 
     def _upload_file(self, file_path: str, upload_prefix: str) -> dict:
-
         try:
             ext = os.path.splitext(file_path)[1].lower()
             if ext in self._SUPPORTED_IMAGE_FORMATS:
@@ -56,19 +56,31 @@ class S3ManagerUpload:
             filename = os.path.basename(file_path)
             object_name = f"{upload_prefix}/{filename}"
 
-            # Log para depuração
             logger.info(f"Uploading file to S3: bucket={self.bucket}, object_name={object_name}")
 
-            # Verifica se já existe
             if self._object_exists(object_name):
                 logger.warning(f"Arquivo já existe no bucket: {object_name}")
-                return {"filename": filename, "path": f"{self.bucket}/{object_name}", "status": "exists", "error": None}
+                return {
+                    "filename": filename,
+                    "path": f"{self.bucket}/{object_name}",
+                    "status": "exists",
+                    "error": None
+                }
 
-            # Faz o upload
             self.client.upload_file(file_path, self.bucket, object_name)
             logger.info(f"Upload concluído: {object_name}")
-            return {"filename": filename, "path": f"{self.bucket}/{object_name}", "status": "uploaded", "error": None}
+            return {
+                "filename": filename,
+                "path": f"{self.bucket}/{object_name}",
+                "status": "uploaded",
+                "error": None
+            }
 
         except Exception as e:
             logger.error(f"Erro ao fazer upload do arquivo {file_path}: {e}")
-            return {"filename": os.path.basename(file_path), "path": None, "status": "error", "error": str(e)}
+            return {
+                "filename": os.path.basename(file_path),
+                "path": None,
+                "status": "error",
+                "error": str(e)
+            }

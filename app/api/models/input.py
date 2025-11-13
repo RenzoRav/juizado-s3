@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 
-class UserData(BaseModel) :
-    user_id : int 
-
-class ClientData(UserData) : 
+class ClientData(BaseModel) : 
     client_id : int
 
 class SessionData(ClientData) : 
@@ -15,6 +12,5 @@ class FileData(SessionData) :
 class DownloadSession(BaseModel) : 
     client_name : str 
     session_name : str 
-    user_id : int
     client_id : int 
     session_id : int

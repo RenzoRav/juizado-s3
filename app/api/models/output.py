@@ -16,7 +16,6 @@ class UploadOutput(BaseModel):
     uploaded_files: List[FileStatus] 
 
 class DownloadSessionRequest(BaseModel):
-    user_name: str
     client_name: str
     session_name: str
 

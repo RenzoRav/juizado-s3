@@ -16,7 +16,6 @@ class Configs(BaseSettings):
     BUCKET_NAME : str=os.getenv("BUCKET")
     ROOT1 :str=os.getenv("ROOT1")
     ROOT2 :str=os.getenv("ROOT2")
-    ROOT3 :str=os.getenv("ROOT3")
     model_config = SettingsConfigDict(env_file=".env")  # correto para Pydantic 2.x
 
 configs = Configs()

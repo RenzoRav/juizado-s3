@@ -1,18 +1,13 @@
 from app.core.logger import logger
 from app.service.amazon_s3.connection import S3Connection
 from app.utils.data import (
-    S3PathSession , 
-    S3PathClient , 
-    S3PathUser , 
+    S3PathSession, 
+    S3PathClient, 
     S3PathFile
 )
 
 class S3DeletePath:
-    def __init__(
-            self, 
-            connection: S3Connection, 
-            path: str
-    ):
+    def __init__(self, connection: S3Connection, path: str):
         self.client = connection.client
         self.bucket = connection.config.bucket_name
         self.path = path
@@ -25,6 +20,7 @@ class S3DeletePath:
                 Bucket=self.bucket,
                 Prefix=f"{self.path}/"
             )
+
             if "Contents" not in objects:
                 logger.warning(f"Nenhum objeto encontrado em {self.path}/")
                 return f"{self.bucket}/{self.path}/ já estava vazio."
@@ -41,29 +37,13 @@ class S3DeletePath:
         except Exception as e:
             logger.error(f"Erro ao deletar diretório {self.path}: {e}")
             raise
-        
-
-class S3DeletePathUser(S3DeletePath):
-    def __init__(self, connection: S3Connection, user_name: str):
-        super().__init__(
-            connection, 
-            S3PathUser(
-                user_name=user_name
-            ).get_path_user()
-        )
-        
-    def delete_path(self) -> str:
-        return super().delete_path()
 
 
 class S3DeletePathClient(S3DeletePath):
-    def __init__(self, connection: S3Connection, user_name: str, client_name: str):
+    def __init__(self, connection: S3Connection, client_name: str):
         super().__init__(
             connection,
-            S3PathClient(
-                user_name=user_name,
-                client_name=client_name
-            ).get_path_client()
+            S3PathClient(client_name=client_name).get_path_client()
         )
 
     def delete_path(self) -> str:
@@ -71,24 +51,20 @@ class S3DeletePathClient(S3DeletePath):
 
 
 class S3DeletePathSession(S3DeletePath):
-    def __init__(self, connection: S3Connection, user_name: str, client_name: str, session_name: str):
+    def __init__(self, connection: S3Connection, client_name: str, session_name: str):
         super().__init__(
-            connection, 
-            S3PathSession(
-                user_name=user_name,
-                client_name=client_name,
-                session_name=session_name
-            ).get_path_session()
+            connection,
+            S3PathSession(client_name=client_name, session_name=session_name).get_path_session()
         )
 
     def delete_path(self) -> str:
         return super().delete_path()
 
+
 class S3DeleteFile:
-    def __init__(self, connection: S3Connection, user_name: str, client_name: str, session_name: str, file_name: str):
+    def __init__(self, connection: S3Connection, client_name: str, session_name: str, file_name: str):
         self.client = connection.client
         self.bucket = connection.config.bucket_name
-        self.user_name = user_name
         self.client_name = client_name
         self.session_name = session_name
         self.file_name = file_name
@@ -96,7 +72,6 @@ class S3DeleteFile:
 
     def create_path(self):
         return S3PathFile(
-            user_name=self.user_name,
             client_name=self.client_name,
             session_name=self.session_name,
             file_name=self.file_name
